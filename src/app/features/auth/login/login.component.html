@@ -1,0 +1,42 @@
+<div class="min-h-screen flex items-center justify-center bg-[#09090b] px-4">
+  <div class="max-w-md w-full space-y-8 bg-[#18181b] p-8 rounded-2xl border border-zinc-800 shadow-2xl">
+    
+    <div class="text-center">
+      <h2 class="text-3xl font-extrabold text-white tracking-tight">IFX Networks</h2>
+      <p class="mt-2 text-sm text-zinc-400">Gestión de Máquinas Virtuales</p>
+    </div>
+
+    <form class="mt-8 space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="space-y-4">
+        <div>
+          <label for="email" class="block text-sm font-medium text-zinc-300">Correo Electrónico</label>
+          <input id="email" formControlName="email" type="email" required
+            class="mt-1 block w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            placeholder="admin@ifx.com">
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-zinc-300">Contraseña</label>
+          <input id="password" formControlName="password" type="password" required
+            class="mt-1 block w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            placeholder="••••••••">
+        </div>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="text-red-400 text-sm bg-red-400/10 p-3 rounded-lg border border-red-400/20">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <button type="submit" [disabled]="isLoading()"
+        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50">
+        @if (isLoading()) {
+          <span class="animate-spin mr-2">🌀</span> Cargando...
+        } @else {
+          Iniciar Sesión
+        }
+      </button>
+    </form>
+  </div>
+</div>

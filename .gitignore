@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 /bazel-out
+/.cache/
 
 # Node
 /node_modules
@@ -29,7 +30,7 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+/.angular
 .sass-cache/
 /connect.lock
 /coverage
@@ -40,3 +41,19 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Credenciales y Secretos 
+src/environments/environment.ts
+src/environments/environment.prod.ts
+
+# IDEs
+/.vscode/
+/.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+package-lock.json
+yarn.lock

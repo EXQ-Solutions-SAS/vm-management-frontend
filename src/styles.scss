@@ -1,1 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-bg-dark text-white antialiased;
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+@layer components {
+  .app-input {
+    @apply w-full bg-card-bg rounded-xl-custom p-4 text-white outline-none transition-all duration-300;
+    /* Borde sutil por defecto */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+
+    &::placeholder {
+      @apply text-slate-500;
+    }
+
+    &:focus {
+      /* Borde naranja y un poco de sombra/glow */
+      border-color: theme('colors.primary-orange');
+      box-shadow: 0 0 0 1px theme('colors.primary-orange');
+    }
+
+    /* Efecto hover opcional */
+    &:hover:not(:focus) {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  .app-button {
+    @apply w-full bg-primary-orange text-white py-4 px-6 rounded-xl-custom font-bold text-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center border-none cursor-pointer;
+  }
+}

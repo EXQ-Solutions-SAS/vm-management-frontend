@@ -1,4 +1,3 @@
-// src/app/core/services/real-time.service.ts
 import { Injectable, inject } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { VmService } from '../../features/vms/services/vm.service';
@@ -10,7 +9,6 @@ export class RealTimeService {
   private vmService = inject(VmService);
 
   constructor() {
-    // Usamos el namespace centralizado
     this.socket = io(`${API_ENDPOINTS.WS_SERVER}/vms`, {
       withCredentials: true 
     });

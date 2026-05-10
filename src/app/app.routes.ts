@@ -7,7 +7,6 @@ export const routes: Routes = [
   { 
     path: 'login', 
     component: LoginComponent 
-    // Opcional: podrías poner un "publicGuard" para que no entren al login si ya están logueados
   },
   { 
     path: 'dashboard', 
@@ -16,7 +15,7 @@ export const routes: Routes = [
   },
   { 
     path: '', 
-    redirectTo: 'dashboard', // Cambiamos a dashboard para que el guard decida si lo deja pasar o lo manda al login
+    redirectTo: 'dashboard', 
     pathMatch: 'full' 
   },
   { 

@@ -31,7 +31,6 @@ export class VmService {
   createVm(data: any) {
     return this.http.post<VirtualMachine>(this.API_URL, data).pipe(
       tap(newVm => {
-        // Si quieres actualizar manual antes del socket:
         this._vms.update(list => [newVm, ...list]);
       })
     );
@@ -57,7 +56,6 @@ export class VmService {
   }
 
   updateVm(id: string, payload: any) {
-    // Según Requisito 44 de la guía de IFX
     return this.http.put<VirtualMachine>(`${this.API_URL}/${id}`, payload).pipe(
       tap(updatedVm => {
         this._vms.update(list =>

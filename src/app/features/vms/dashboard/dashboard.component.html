@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-[#09090b] text-zinc-50 font-sans">
-  
+
   <nav class="border-b border-zinc-800 bg-[#09090b]/50 backdrop-blur-md sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
@@ -9,26 +9,30 @@
         </div>
         <div class="flex items-center gap-4">
           <span class="text-xs text-zinc-400 bg-zinc-800 px-2 py-1 rounded">{{ authService.user()?.role }}</span>
-          <button (click)="logout()" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Cerrar Sesión</button>
+          <button (click)="logout()" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Cerrar
+            Sesión</button>
         </div>
       </div>
     </div>
   </nav>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
       <div class="bg-[#18181b] border border-zinc-800 p-6 rounded-2xl shadow-sm">
         <p class="text-zinc-400 text-sm font-medium">CPUs Asignadas</p>
-        <h3 class="text-3xl font-bold mt-2">{{ totalCores() }} <span class="text-sm font-normal text-zinc-500">vCPUs</span></h3>
+        <h3 class="text-3xl font-bold mt-2">{{ totalCores() }} <span
+            class="text-sm font-normal text-zinc-500">vCPUs</span></h3>
       </div>
       <div class="bg-[#18181b] border border-zinc-800 p-6 rounded-2xl shadow-sm">
         <p class="text-zinc-400 text-sm font-medium">Memoria RAM</p>
-        <h3 class="text-3xl font-bold mt-2 text-blue-500">{{ totalRam() }} <span class="text-sm font-normal text-zinc-500">GB</span></h3>
+        <h3 class="text-3xl font-bold mt-2 text-blue-500">{{ totalRam() }} <span
+            class="text-sm font-normal text-zinc-500">GB</span></h3>
       </div>
       <div class="bg-[#18181b] border border-zinc-800 p-6 rounded-2xl shadow-sm">
         <p class="text-zinc-400 text-sm font-medium">Almacenamiento</p>
-        <h3 class="text-3xl font-bold mt-2 text-purple-500">{{ totalStorage() }} <span class="text-sm font-normal text-zinc-500">GB</span></h3>
+        <h3 class="text-3xl font-bold mt-2 text-purple-500">{{ totalStorage() }} <span
+            class="text-sm font-normal text-zinc-500">GB</span></h3>
       </div>
     </div>
 
@@ -36,12 +40,13 @@
       <div class="p-6 border-b border-zinc-800 flex justify-between items-center">
         <h2 class="text-lg font-semibold">Instancias Activas</h2>
         @if (authService.isAdmin()) {
-          <button class="bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-zinc-200 transition-all" (click)="openModal()">
-            + Crear Nueva VM
-          </button>
+        <button class="bg-white text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-zinc-200 transition-all"
+          (click)="openModal()">
+          + Crear Nueva VM
+        </button>
         }
       </div>
-      
+
       <div class="overflow-x-auto">
         <table class="w-full text-left">
           <thead class="bg-zinc-900/50 text-zinc-500 text-xs uppercase tracking-wider">
@@ -54,39 +59,48 @@
           </thead>
           <tbody class="divide-y divide-zinc-800">
             @for (vm of vmService.vms(); track vm.id) {
-              <tr class="hover:bg-zinc-800/30 transition-colors group">
-                <td class="px-6 py-4">
-                  <div class="font-medium text-zinc-200">{{ vm.name }}</div>
-                  <div class="text-xs text-zinc-500 font-mono italic">{{ vm.os }}</div>
-                </td>
-                <td class="px-6 py-4">
-                  <div class="flex items-center gap-2">
-                    <span [class]="vm.status === 'ENCENDIDA' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-zinc-600'" class="w-2 h-2 rounded-full transition-all"></span>
-                    <span [class]="vm.status === 'ENCENDIDA' ? 'text-green-400' : 'text-zinc-400'" class="text-sm font-medium">
-                      {{ vm.status === 'ENCENDIDA' ? 'Running' : 'Stopped' }}
-                    </span>
-                  </div>
-                </td>
-                <td class="px-6 py-4">
-                  <div class="text-sm text-zinc-300">{{ vm.cores }} Cores / {{ vm.ram }}GB RAM</div>
-                  <div class="text-xs text-zinc-500">{{ vm.disk }}GB SSD</div>
-                </td>
-                <td class="px-6 py-4 text-right">
-                  <div class="flex justify-end gap-2">
-                    <button (click)="toggleVm(vm)" class="p-2 hover:bg-zinc-700 rounded-lg transition-colors" 
-                            [title]="vm.status === 'ENCENDIDA' ? 'Apagar' : 'Encender'">
-                      {{ vm.status === 'ENCENDIDA' ? '⏹️' : '▶️' }}
-                    </button>
-                    @if (authService.isAdmin()) {
-                      <button (click)="vmService.deleteVm(vm.id)" class="p-2 hover:bg-red-900/30 text-red-500 rounded-lg transition-colors">🗑️</button>
-                    }
-                  </div>
-                </td>
-              </tr>
+            <tr class="hover:bg-zinc-800/30 transition-colors group">
+              <td class="px-6 py-4">
+                <div class="font-medium text-zinc-200">{{ vm.name }}</div>
+                <div class="text-xs text-zinc-500 font-mono italic">{{ vm.os }}</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-2">
+                  <span
+                    [class]="vm.status === 'ENCENDIDA' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-zinc-600'"
+                    class="w-2 h-2 rounded-full transition-all"></span>
+                  <span [class]="vm.status === 'ENCENDIDA' ? 'text-green-400' : 'text-zinc-400'"
+                    class="text-sm font-medium">
+                    {{ vm.status === 'ENCENDIDA' ? 'Running' : 'Stopped' }}
+                  </span>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-zinc-300">{{ vm.cores }} Cores / {{ vm.ram }}GB RAM</div>
+                <div class="text-xs text-zinc-500">{{ vm.disk }}GB SSD</div>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <div class="flex justify-end gap-2">
+                  <button (click)="toggleVm(vm)" class="p-2 hover:bg-zinc-700 rounded-lg transition-colors"
+                    [title]="vm.status === 'ENCENDIDA' ? 'Apagar' : 'Encender'">
+                    {{ vm.status === 'ENCENDIDA' ? '⏹️' : '▶️' }}
+                  </button>
+                  @if (authService.isAdmin()) {
+                  <button (click)="openEditModal(vm)"
+                    class="p-2 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-lg transition-colors"
+                    title="Editar">
+                    ✏️
+                  </button>
+                  <button (click)="vmService.deleteVm(vm.id)"
+                    class="p-2 hover:bg-red-900/30 text-red-500 rounded-lg transition-colors">🗑️</button>
+                  }
+                </div>
+              </td>
+            </tr>
             } @empty {
-              <tr>
-                <td colspan="4" class="px-6 py-10 text-center text-zinc-500">No hay máquinas virtuales creadas.</td>
-              </tr>
+            <tr>
+              <td colspan="4" class="px-6 py-10 text-center text-zinc-500">No hay máquinas virtuales creadas.</td>
+            </tr>
             }
           </tbody>
         </table>
@@ -96,63 +110,66 @@
 </div>
 
 @if (showModal()) {
-  <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-    <div class="bg-[#18181b] border border-zinc-800 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-      
-      <div class="p-6 border-b border-zinc-800 flex justify-between items-center">
-        <h3 class="text-xl font-bold text-white">Crear Nueva Instancia</h3>
-        <button (click)="closeModal()" class="text-zinc-500 hover:text-white text-2xl transition-colors">&times;</button>
+<div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+  <div
+    class="bg-[#18181b] border border-zinc-800 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+
+    <div class="p-6 border-b border-zinc-800 flex justify-between items-center">
+      <h3 class="text-xl font-bold text-white">
+        {{ editingVm() ? 'Editar Instancia' : 'Crear Nueva Instancia' }}
+      </h3>
+      <button (click)="closeModal()" class="text-zinc-500 hover:text-white text-2xl transition-colors">&times;</button>
+    </div>
+
+    <form [formGroup]="vmForm" (ngSubmit)="onSaveVm()" class="p-6 space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-zinc-400 mb-1">Nombre de la VM</label>
+        <input formControlName="name" type="text" placeholder="ej: srv-db-01"
+          class="w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
       </div>
 
-      <form [formGroup]="vmForm" (ngSubmit)="onCreateVm()" class="p-6 space-y-4">
+      <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-medium text-zinc-400 mb-1">Nombre de la VM</label>
-          <input formControlName="name" type="text" placeholder="ej: srv-db-01"
-            class="w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+          <label class="block text-sm font-medium text-zinc-400 mb-1">vCores (CPUs)</label>
+          <input formControlName="cpu" type="number"
+            class="w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
         </div>
+        <div>
+          <label class="block text-sm font-medium text-zinc-400 mb-1">RAM (GB)</label>
+          <input formControlName="ram" type="number"
+            class="w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+        </div>
+      </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-zinc-400 mb-1">vCores (CPUs)</label>
-            <input formControlName="cpu" type="number"
-              class="w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-zinc-400 mb-1">RAM (GB)</label>
-            <input formControlName="ram" type="number"
-              class="w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-          </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-zinc-400 mb-1">Disco (GB SSD)</label>
+          <input formControlName="storage" type="number"
+            class="w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
         </div>
+        <div>
+          <label class="block text-sm font-medium text-zinc-400 mb-1">Sistema Operativo</label>
+          <select formControlName="os"
+            class="w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            <option value="Ubuntu 22.04">Ubuntu 22.04 LTS</option>
+            <option value="Debian 12">Debian 12</option>
+            <option value="CentOS Stream 9">CentOS Stream 9</option>
+            <option value="Windows Server 2022">Windows Server 2022</option>
+          </select>
+        </div>
+      </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-zinc-400 mb-1">Disco (GB SSD)</label>
-            <input formControlName="storage" type="number"
-              class="w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-zinc-400 mb-1">Sistema Operativo</label>
-            <select formControlName="os" 
-              class="w-full bg-[#09090b] border border-zinc-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-              <option value="Ubuntu 22.04">Ubuntu 22.04 LTS</option>
-              <option value="Debian 12">Debian 12</option>
-              <option value="CentOS Stream 9">CentOS Stream 9</option>
-              <option value="Windows Server 2022">Windows Server 2022</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="pt-6 flex gap-3">
-          <button type="button" (click)="closeModal()"
-            class="flex-1 px-4 py-2 rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 transition-colors">
-            Cancelar
-          </button>
-          <button type="submit" [disabled]="vmForm.invalid || isSubmitting()"
-            class="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-900/20">
-            {{ isSubmitting() ? 'Procesando...' : 'Crear Instancia' }}
-          </button>
-        </div>
-      </form>
-    </div>
+      <div class="pt-6 flex gap-3">
+        <button type="button" (click)="closeModal()"
+          class="flex-1 px-4 py-2 rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 transition-colors">
+          Cancelar
+        </button>
+        <button type="submit" [disabled]="vmForm.invalid || isSubmitting()"
+          class="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 disabled:opacity-50 transition-all">
+          {{ isSubmitting() ? 'Procesando...' : (editingVm() ? 'Guardar Cambios' : 'Crear Instancia') }}
+        </button>
+      </div>
+    </form>
   </div>
+</div>
 }

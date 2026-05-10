@@ -3,6 +3,7 @@ import { VmService } from '../services/vm.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { VirtualMachine } from '../interfaces/vm.interface';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,6 +23,7 @@ export class DashboardComponent implements OnInit {
 
   showModal = signal(false);
   isSubmitting = signal(false);
+  editingVm = signal<VirtualMachine | null>(null); // Signal para saber si editamos
 
   // El formulario puede mantener nombres amigables, pero los mapearemos al enviar
   vmForm = this.fb.group({
@@ -36,20 +38,23 @@ export class DashboardComponent implements OnInit {
     this.vmService.loadVms();
   }
 
-  onCreateVm() {
+  onSaveVm() {
     if (this.vmForm.invalid) return;
     this.isSubmitting.set(true);
 
-    // MAPEÓ CRÍTICO: Transformar para que el Backend no explote
     const payload = {
-      name: this.vmForm.value.name,
-      cores: Number(this.vmForm.value.cpu), // cpu -> cores
+      name: this.vmForm.value.name!,
+      cores: Number(this.vmForm.value.cpu),
       ram: Number(this.vmForm.value.ram),
-      disk: Number(this.vmForm.value.storage), // storage -> disk
-      os: this.vmForm.value.os
+      disk: Number(this.vmForm.value.storage),
+      os: this.vmForm.value.os!
     };
 
-    this.vmService.createVm(payload).subscribe({
+    const request = this.editingVm()
+      ? this.vmService.updateVm(this.editingVm()!.id, payload) // PUT si hay edición
+      : this.vmService.createVm(payload); // POST si es nueva
+
+    request.subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.closeModal();
@@ -58,11 +63,32 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  openEditModal(vm: VirtualMachine) {
+    this.editingVm.set(vm);
+    this.vmForm.patchValue({
+      name: vm.name,
+      cpu: vm.cores,
+      ram: vm.ram,
+      storage: vm.disk,
+      os: vm.os
+    });
+    this.showModal.set(true);
+  }
+
   toggleVm(vm: any) { this.vmService.toggleStatus(vm); }
+
   logout() { this.authService.logout(); }
+
   openModal() { this.showModal.set(true); }
-  closeModal() { 
-    this.showModal.set(false); 
-    this.vmForm.reset({ cpu: 1, ram: 1, storage: 10, os: 'Ubuntu 22.04' }); 
+
+  closeModal() {
+    this.showModal.set(false);
+    this.editingVm.set(null); // CRÍTICO: Quita el rastro de la edición anterior
+    this.vmForm.reset({
+      cpu: 1,
+      ram: 1,
+      storage: 10,
+      os: 'Ubuntu 22.04'
+    });
   }
 }

@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { VirtualMachine } from '../interfaces/vm.interface';
 import { ToastService } from '../../../core/services/toast.service';
+import { VM_FORM_DEFAULTS, VM_MESSAGES } from '../../../core/constants/vm.constants';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,10 +31,10 @@ export class DashboardComponent implements OnInit {
   // El formulario puede mantener nombres amigables, pero los mapearemos al enviar
   vmForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
-    cpu: [1, [Validators.required, Validators.min(1)]],
-    ram: [1, [Validators.required, Validators.min(1)]],
-    storage: [10, [Validators.required, Validators.min(10)]],
-    os: ['Ubuntu 22.04', [Validators.required]] // Campo faltante requerido por Prisma
+    cpu: [VM_FORM_DEFAULTS.CPU, [Validators.required, Validators.min(1)]],
+    ram: [VM_FORM_DEFAULTS.RAM, [Validators.required, Validators.min(1)]],
+    storage: [VM_FORM_DEFAULTS.STORAGE, [Validators.required, Validators.min(10)]],
+    os: [VM_FORM_DEFAULTS.OS, [Validators.required]]
   });
 
   ngOnInit() {
@@ -44,6 +45,7 @@ export class DashboardComponent implements OnInit {
     if (this.vmForm.invalid) return;
     this.isSubmitting.set(true);
 
+    const isEditing = !!this.editingVm();
     const payload = {
       name: this.vmForm.value.name!,
       cores: Number(this.vmForm.value.cpu),
@@ -52,17 +54,17 @@ export class DashboardComponent implements OnInit {
       os: this.vmForm.value.os!
     };
 
-    const request = this.editingVm()
-      ? this.vmService.updateVm(this.editingVm()!.id, payload) // PUT si hay edición
-      : this.vmService.createVm(payload); // POST si es nueva
+    const request = isEditing
+      ? this.vmService.updateVm(this.editingVm()!.id, payload)
+      : this.vmService.createVm(payload);
 
     request.subscribe({
       next: () => {
-        this.toastService.show(this.editingVm() ? 'Configuración actualizada' : 'Instancia creada con éxito');
+        this.toastService.show(isEditing ? VM_MESSAGES.SUCCESS.UPDATED : VM_MESSAGES.SUCCESS.CREATED);
         this.closeModal();
       },
       error: () => {
-        this.toastService.show('Error al guardar los cambios', 'error');
+        this.toastService.show(VM_MESSAGES.ERROR.SAVE, 'error');
         this.isSubmitting.set(false);
       }
     });
@@ -70,8 +72,18 @@ export class DashboardComponent implements OnInit {
 
   deleteVm(id: string) {
     this.vmService.deleteVm(id).subscribe({
-      next: () => this.toastService.show('Instancia eliminada correctamente'),
-      error: () => this.toastService.show('No se pudo eliminar la instancia', 'error')
+      next: () => this.toastService.show(VM_MESSAGES.SUCCESS.DELETED),
+      error: () => this.toastService.show(VM_MESSAGES.ERROR.DELETE, 'error')
+    });
+  }
+
+  toggleVm(vm: VirtualMachine) {
+    this.vmService.toggleStatus(vm).subscribe({
+      next: () => {
+        const action = vm.status === 'ENCENDIDA' ? 'apagada' : 'encendida';
+        this.toastService.show(VM_MESSAGES.SUCCESS.STATUS_CHANGED(action));
+      },
+      error: () => this.toastService.show(VM_MESSAGES.ERROR.STATUS, 'error')
     });
   }
 
@@ -87,12 +99,6 @@ export class DashboardComponent implements OnInit {
     this.showModal.set(true);
   }
 
-  toggleVm(vm: VirtualMachine) {
-    this.vmService.toggleStatus(vm).subscribe({
-      next: () => this.toastService.show(`Instancia ${vm.status === 'ENCENDIDA' ? 'apagada' : 'encendida'}`, 'success'),
-      error: () => this.toastService.show('Error al cambiar el estado de la VM', 'error')
-    });
-  }
 
   logout() { this.authService.logout(); }
 
@@ -103,10 +109,10 @@ export class DashboardComponent implements OnInit {
     this.editingVm.set(null);
     this.isSubmitting.set(false);
     this.vmForm.reset({
-      cpu: 1,
-      ram: 1,
-      storage: 10,
-      os: 'Ubuntu 22.04'
+      cpu: VM_FORM_DEFAULTS.CPU,
+      ram: VM_FORM_DEFAULTS.RAM,
+      storage: VM_FORM_DEFAULTS.STORAGE,
+      os: VM_FORM_DEFAULTS.OS
     });
   }
 }

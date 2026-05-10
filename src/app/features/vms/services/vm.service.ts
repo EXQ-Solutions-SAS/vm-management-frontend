@@ -3,11 +3,12 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, tap, throwError } from 'rxjs';
 import { VirtualMachine, VMStatus } from '../interfaces/vm.interface';
+import { API_ENDPOINTS } from '../../../core/constants/vm.constants';
 
 @Injectable({ providedIn: 'root' })
 export class VmService {
   private http = inject(HttpClient);
-  private readonly API_URL = 'http://localhost:3000/vms';
+  private readonly API_URL = API_ENDPOINTS.VMS;
 
   private _isLoading = signal(false);
   // State

@@ -1,6 +1,7 @@
 import { Component, signal, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
+import { AUTH_MESSAGES } from '../../../core/constants/vm.constants';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +13,6 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
 
-  // States usando Signals
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
 
@@ -28,12 +28,10 @@ export class LoginComponent {
     this.errorMessage.set(null);
 
     this.authService.login(this.loginForm.value).subscribe({
-      next: () => {
-        // El AuthService redirigirá al dashboard
-      },
-      error: (err) => {
+      next: () => {},
+      error: () => {
         this.isLoading.set(false);
-        this.errorMessage.set('Credenciales inválidas o error de conexión');
+        this.errorMessage.set(AUTH_MESSAGES.ERROR);
       }
     });
   }

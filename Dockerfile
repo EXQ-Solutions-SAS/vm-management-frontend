@@ -6,9 +6,6 @@ RUN npm install
 COPY . .
 RUN npm run build --configuration=production
 
-# Etapa 2: Nginx
-# ... etapa de build anterior ...
-
 FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 

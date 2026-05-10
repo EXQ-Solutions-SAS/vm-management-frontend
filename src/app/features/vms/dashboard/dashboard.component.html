@@ -58,6 +58,25 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-zinc-800">
+            @if (vmService.isLoading()) {
+            @for (i of [1,2,3]; track i) {
+            <tr class="animate-pulse">
+              <td class="px-6 py-4">
+                <div class="h-4 bg-zinc-800 rounded w-32 mb-2"></div>
+                <div class="h-3 bg-zinc-800 rounded w-20"></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="h-4 bg-zinc-800 rounded w-16"></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="h-4 bg-zinc-800 rounded w-24"></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="h-8 bg-zinc-800 rounded w-20 float-right"></div>
+              </td>
+            </tr>
+            }
+            } @else {
             @for (vm of vmService.vms(); track vm.id) {
             <tr class="hover:bg-zinc-800/30 transition-colors group">
               <td class="px-6 py-4">
@@ -91,7 +110,7 @@
                     title="Editar">
                     ✏️
                   </button>
-                  <button (click)="vmService.deleteVm(vm.id)"
+                  <button (click)="deleteVm(vm.id)"
                     class="p-2 hover:bg-red-900/30 text-red-500 rounded-lg transition-colors">🗑️</button>
                   }
                 </div>
@@ -101,6 +120,7 @@
             <tr>
               <td colspan="4" class="px-6 py-10 text-center text-zinc-500">No hay máquinas virtuales creadas.</td>
             </tr>
+            }
             }
           </tbody>
         </table>
@@ -173,3 +193,13 @@
   </div>
 </div>
 }
+
+<div class="fixed bottom-5 right-5 z-[100] flex flex-col gap-3">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div [class]="toast.type === 'success' ? 'border-green-500/50 bg-green-500/10 text-green-400' : 'border-red-500/50 bg-red-500/10 text-red-400'"
+         class="flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-md shadow-2xl animate-in slide-in-from-right duration-300">
+      <span>{{ toast.type === 'success' ? '✅' : '❌' }}</span>
+      <p class="text-sm font-medium">{{ toast.message }}</p>
+    </div>
+  }
+</div>

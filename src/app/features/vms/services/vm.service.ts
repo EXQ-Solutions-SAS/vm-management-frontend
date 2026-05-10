@@ -1,7 +1,7 @@
 // src/app/features/vms/services/vm.service.ts
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs';
+import { catchError, tap, throwError } from 'rxjs';
 import { VirtualMachine, VMStatus } from '../interfaces/vm.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -9,15 +9,21 @@ export class VmService {
   private http = inject(HttpClient);
   private readonly API_URL = 'http://localhost:3000/vms';
 
+  private _isLoading = signal(false);
   // State
   private _vms = signal<VirtualMachine[]>([]);
 
   // Selectores (Read-only)
   public vms = computed(() => this._vms());
-
+  public isLoading = computed(() => this._isLoading());
   loadVms() {
-    return this.http.get<VirtualMachine[]>(this.API_URL).subscribe(data => {
-      this._vms.set(data);
+    this._isLoading.set(true);
+    this.http.get<VirtualMachine[]>(this.API_URL).subscribe({
+      next: (vms) => {
+        this._vms.set(vms);
+        this._isLoading.set(false);
+      },
+      error: () => this._isLoading.set(false)
     });
   }
 
@@ -35,27 +41,18 @@ export class VmService {
     const previousVms = this._vms();
     const nextStatus: VMStatus = vm.status === 'ENCENDIDA' ? 'APAGADA' : 'ENCENDIDA';
 
-    // 1. Optimistic UI: Update UI al instante (Requisito 17) [cite: 17]
+    // 1. Optimistic UI 
     this._vms.update(list =>
       list.map(item => item.id === vm.id ? { ...item, status: nextStatus } : item)
     );
 
-    // 2. Request al back usando PUT y la ruta correcta /vms/{id} (Requisito 44) 
-    // Mandamos el objeto completo o solo el cambio, pero por PUT como pide la guía
-    this.http.put(`${this.API_URL}/${vm.id}`, { ...vm, status: nextStatus })
-      .subscribe({
-        next: (updatedVm) => {
-          console.log('Estado actualizado en servidor:', updatedVm);
-          // Opcional: Podrías actualizar con la respuesta real del server si fuera necesario
-        },
-        error: (err) => {
-          console.error('Fallo el cambio de estado, aplicando rollback...', err);
-          // 3. Rollback si el server falla (Requerimiento 17) [cite: 17]
-          this._vms.set(previousVms);
-
-          // Aquí podrías disparar un Toast de error (Requisito 19) [cite: 19]
-        }
-      });
+    return this.http.put(`${this.API_URL}/${vm.id}`, { ...vm, status: nextStatus }).pipe(
+      catchError(err => {
+        // 2. Rollback en caso de error 
+        this._vms.set(previousVms);
+        return throwError(() => err);
+      })
+    );
   }
 
   updateVm(id: string, payload: any) {
@@ -80,25 +77,16 @@ export class VmService {
   }
 
   deleteVm(id: string) {
-    // 1. Guardamos el estado previo para el rollback (Requisito 17) 
     const previousVms = this._vms();
-
-    // 2. Optimistic UI: Borramos de la lista local inmediatamente 
+    // Optimistic UI 
     this._vms.update(list => list.filter(vm => vm.id !== id));
 
-    // 3. Petición al Backend usando el endpoint DELETE /vms/{id} (Requisito 45) 
-    this.http.delete(`${this.API_URL}/${id}`).subscribe({
-      next: () => {
-        console.log('VM eliminada correctamente del servidor');
-        // No necesitamos hacer nada más porque el signal ya se actualizó
-      },
-      error: (err) => {
-        console.error('Error al eliminar la VM, restaurando estado...', err);
-        // 4. Rollback: Si el servidor falla, devolvemos la VM a la lista 
+    return this.http.delete(`${this.API_URL}/${id}`).pipe(
+      catchError(err => {
+        // Rollback 
         this._vms.set(previousVms);
-
-        // Bonus: Aquí deberías mostrar un Toast de error (Requisito 19) [cite: 19]
-      }
-    });
+        return throwError(() => err);
+      })
+    );
   }
 }

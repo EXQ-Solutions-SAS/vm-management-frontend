@@ -4,6 +4,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { VirtualMachine } from '../interfaces/vm.interface';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,6 +15,7 @@ import { VirtualMachine } from '../interfaces/vm.interface';
 export class DashboardComponent implements OnInit {
   public vmService = inject(VmService);
   public authService = inject(AuthService);
+  public toastService = inject(ToastService);
   private fb = inject(FormBuilder);
 
   // CORRECCIÓN: Usar 'cores' y 'disk' que es lo que viene de Prisma
@@ -56,10 +58,20 @@ export class DashboardComponent implements OnInit {
 
     request.subscribe({
       next: () => {
-        this.isSubmitting.set(false);
+        this.toastService.show(this.editingVm() ? 'Configuración actualizada' : 'Instancia creada con éxito');
         this.closeModal();
       },
-      error: () => this.isSubmitting.set(false)
+      error: () => {
+        this.toastService.show('Error al guardar los cambios', 'error');
+        this.isSubmitting.set(false);
+      }
+    });
+  }
+
+  deleteVm(id: string) {
+    this.vmService.deleteVm(id).subscribe({
+      next: () => this.toastService.show('Instancia eliminada correctamente'),
+      error: () => this.toastService.show('No se pudo eliminar la instancia', 'error')
     });
   }
 
@@ -75,7 +87,12 @@ export class DashboardComponent implements OnInit {
     this.showModal.set(true);
   }
 
-  toggleVm(vm: any) { this.vmService.toggleStatus(vm); }
+  toggleVm(vm: VirtualMachine) {
+    this.vmService.toggleStatus(vm).subscribe({
+      next: () => this.toastService.show(`Instancia ${vm.status === 'ENCENDIDA' ? 'apagada' : 'encendida'}`, 'success'),
+      error: () => this.toastService.show('Error al cambiar el estado de la VM', 'error')
+    });
+  }
 
   logout() { this.authService.logout(); }
 
@@ -83,7 +100,8 @@ export class DashboardComponent implements OnInit {
 
   closeModal() {
     this.showModal.set(false);
-    this.editingVm.set(null); // CRÍTICO: Quita el rastro de la edición anterior
+    this.editingVm.set(null);
+    this.isSubmitting.set(false);
     this.vmForm.reset({
       cpu: 1,
       ram: 1,

@@ -6,11 +6,12 @@ import { CommonModule } from '@angular/common';
 import { VirtualMachine } from '../interfaces/vm.interface';
 import { ToastService } from '../../../core/services/toast.service';
 import { VM_FORM_DEFAULTS, VM_MESSAGES } from '../../../core/constants/vm.constants';
+import { ResourceChartComponent } from '../resource-chart/resource-chart.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, ResourceChartComponent],
   templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
@@ -20,9 +21,27 @@ export class DashboardComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   // CORRECCIÓN: Usar 'cores' y 'disk' que es lo que viene de Prisma
-  totalCores = computed(() => this.vmService.vms().reduce((acc, vm) => acc + (vm.cores || 0), 0));
-  totalRam = computed(() => this.vmService.vms().reduce((acc, vm) => acc + (vm.ram || 0), 0));
-  totalStorage = computed(() => this.vmService.vms().reduce((acc, vm) => acc + (vm.disk || 0), 0));
+  totalCores = computed(() => this.vmService.vms().reduce((acc, vm) => acc + vm.cores, 0));
+  totalRam = computed(() => this.vmService.vms().reduce((acc, vm) => acc + vm.ram, 0));
+  totalStorage = computed(() => this.vmService.vms().reduce((acc, vm) => acc + vm.disk, 0));
+
+  usedCores = computed(() =>
+    this.vmService.vms()
+      .filter(vm => vm.status === 'ENCENDIDA')
+      .reduce((acc, vm) => acc + vm.cores, 0)
+  );
+
+  usedRam = computed(() =>
+    this.vmService.vms()
+      .filter(vm => vm.status === 'ENCENDIDA')
+      .reduce((acc, vm) => acc + vm.ram, 0)
+  );
+
+  usedStorage = computed(() =>
+    this.vmService.vms()
+      .filter(vm => vm.status === 'ENCENDIDA')
+      .reduce((acc, vm) => acc + vm.disk, 0)
+  );
 
   showModal = signal(false);
   isSubmitting = signal(false);

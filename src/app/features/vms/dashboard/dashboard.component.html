@@ -1,5 +1,4 @@
 <div class="min-h-screen bg-[#09090b] text-zinc-50 font-sans">
-
   <nav class="border-b border-zinc-800 bg-[#09090b]/50 backdrop-blur-md sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16 items-center">
@@ -18,21 +17,39 @@
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-      <div class="bg-[#18181b] border border-zinc-800 p-6 rounded-2xl shadow-sm">
-        <p class="text-zinc-400 text-sm font-medium">CPUs Asignadas</p>
-        <h3 class="text-3xl font-bold mt-2">{{ totalCores() }} <span
-            class="text-sm font-normal text-zinc-500">vCPUs</span></h3>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+
+      <div class="lg:col-span-1">
+        <app-resource-chart [usedCores]="usedCores()" [totalCores]="totalCores()" [usedRam]="usedRam()"
+          [totalRam]="totalRam()" [usedDisk]="usedStorage()" [totalDisk]="totalStorage()">
+        </app-resource-chart>
       </div>
-      <div class="bg-[#18181b] border border-zinc-800 p-6 rounded-2xl shadow-sm">
-        <p class="text-zinc-400 text-sm font-medium">Memoria RAM</p>
-        <h3 class="text-3xl font-bold mt-2 text-blue-500">{{ totalRam() }} <span
-            class="text-sm font-normal text-zinc-500">GB</span></h3>
-      </div>
-      <div class="bg-[#18181b] border border-zinc-800 p-6 rounded-2xl shadow-sm">
-        <p class="text-zinc-400 text-sm font-medium">Almacenamiento</p>
-        <h3 class="text-3xl font-bold mt-2 text-purple-500">{{ totalStorage() }} <span
-            class="text-sm font-normal text-zinc-500">GB</span></h3>
+
+      <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div class="bg-[#18181b] border border-zinc-800 p-6 rounded-2xl shadow-sm">
+          <p class="text-zinc-400 text-sm font-medium">Uso de vCPUs</p>
+          <h3 class="text-3xl font-bold mt-2 text-white">
+            {{ usedCores() }}<span class="text-zinc-500 text-xl">/{{ totalCores() }}</span>
+            <span class="text-xs font-normal text-zinc-500 block italic">Cores en uso</span>
+          </h3>
+        </div>
+
+        <div class="bg-[#18181b] border border-zinc-800 p-6 rounded-2xl shadow-sm">
+          <p class="text-zinc-400 text-sm font-medium">Uso de RAM</p>
+          <h3 class="text-3xl font-bold mt-2 text-blue-500">
+            {{ usedRam() }}<span class="text-zinc-500 text-xl">/{{ totalRam() }}GB</span>
+            <span class="text-xs font-normal text-zinc-500 block italic">Memoria activa</span>
+          </h3>
+        </div>
+
+        <div class="bg-[#18181b] border border-zinc-800 p-6 rounded-2xl shadow-sm">
+          <p class="text-zinc-400 text-sm font-medium">Uso de Disco</p>
+          <h3 class="text-3xl font-bold mt-2 text-purple-500">
+            {{ usedStorage() }}<span class="text-zinc-500 text-xl">/{{ totalStorage() }}GB</span>
+            <span class="text-xs font-normal text-zinc-500 block italic">Almacenamiento ocupado</span>
+          </h3>
+        </div>
       </div>
     </div>
 
@@ -107,9 +124,7 @@
                   @if (authService.isAdmin()) {
                   <button (click)="openEditModal(vm)"
                     class="p-2 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-lg transition-colors"
-                    title="Editar">
-                    ✏️
-                  </button>
+                    title="Editar">✏️</button>
                   <button (click)="deleteVm(vm.id)"
                     class="p-2 hover:bg-red-900/30 text-red-500 rounded-lg transition-colors">🗑️</button>
                   }
@@ -196,10 +211,11 @@
 
 <div class="fixed bottom-5 right-5 z-[100] flex flex-col gap-3">
   @for (toast of toastService.toasts(); track toast.id) {
-    <div [class]="toast.type === 'success' ? 'border-green-500/50 bg-green-500/10 text-green-400' : 'border-red-500/50 bg-red-500/10 text-red-400'"
-         class="flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-md shadow-2xl animate-in slide-in-from-right duration-300">
-      <span>{{ toast.type === 'success' ? '✅' : '❌' }}</span>
-      <p class="text-sm font-medium">{{ toast.message }}</p>
-    </div>
+  <div
+    [class]="toast.type === 'success' ? 'border-green-500/50 bg-green-500/10 text-green-400' : 'border-red-500/50 bg-red-500/10 text-red-400'"
+    class="flex items-center gap-3 px-4 py-3 rounded-xl border backdrop-blur-md shadow-2xl animate-in slide-in-from-right duration-300">
+    <span>{{ toast.type === 'success' ? '✅' : '❌' }}</span>
+    <p class="text-sm font-medium">{{ toast.message }}</p>
+  </div>
   }
 </div>
